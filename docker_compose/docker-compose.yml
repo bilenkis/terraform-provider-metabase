@@ -1,0 +1,21 @@
+version: '3.7'
+services:
+  pg:
+    image: postgres
+    ports:
+      - "5432:5432"
+    links:
+      - metabase
+    environment:
+      POSTGRES_PASSWORD: 2I1dnzeYCIefM8Ru6Rxj
+  my:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    links:
+      - metabase
+    environment:
+      MYSQL_ROOT_PASSWORD: 2I1dnzeYCIefM8Ru6Rxj
+  metabase:
+    image: metabase/metabase:v0.39.1
+    ports:
+      - "3000:3000"
