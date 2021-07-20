@@ -15,6 +15,11 @@ variable "metabase_password" {
   type = string
 }
 
+variable "base_name" {
+  type = string
+  default = "Sample Dataset"
+}
+
 provider "metabase" {
   username = var.metabase_username
   password = var.metabase_password
@@ -23,7 +28,7 @@ provider "metabase" {
 module "base" {
   source = "./base"
 
-  base_name = "Sample Dataset"
+  base_name = var.base_name
 }
 
 output "all_bases" {
@@ -31,5 +36,5 @@ output "all_bases" {
 }
 
 output "id" {
-  value = module.base.id
+  value = module.base.id[var.base_name]
 }

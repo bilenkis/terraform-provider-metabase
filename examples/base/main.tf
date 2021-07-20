@@ -23,7 +23,7 @@ output "all_bases" {
 output "id" {
   value = {
     for base in data.metabase_bases.all.databases :
-    base.id => base
+    base.name => base.id
     if base.name == var.base_name
   }
 }
