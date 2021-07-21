@@ -26,6 +26,7 @@ func Provider() *schema.Provider {
 		ResourcesMap: map[string]*schema.Resource{},
 		DataSourcesMap: map[string]*schema.Resource{
 			"metabase_bases": dataSourceBases(),
+			"metabase_base":  dataSourceBase(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}

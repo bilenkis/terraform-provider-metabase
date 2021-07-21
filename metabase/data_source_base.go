@@ -12,109 +12,63 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func dataSourceBases() *schema.Resource {
+type DetailsDb struct {
+	Db string `json:"db"`
+}
+
+type CacheFieldValues struct {
+	ScheduleMinute int    `json:"schedule_minute"`
+	ScheduleDay    string `json:"schedule_day"`
+	ScheduleFrame  string `json:"schedule_frame"`
+	ScheduleHour   int    `json:"schedule_hour"`
+	ScheduleType   string `json:"schedule_type"`
+}
+
+type Schedules struct {
+	CacheFieldValues CacheFieldValues `json:"cache_field_values"`
+	MetadataSync     CacheFieldValues `json:"metadata_sync"`
+}
+
+type Database struct {
+	Description              string    `json:"description"`
+	Features                 []string  `json:"features"`
+	CacheFieldValuesSchedule string    `json:"cache_field_values_schedule"`
+	Timezone                 string    `json:"timezone"`
+	AutoRunQueries           bool      `json:"auto_run_queries"`
+	MetadataSyncSchedule     string    `json:"metadata_sync_schedule"`
+	Name                     string    `json:"name"`
+	Caveats                  string    `json:"caveats"`
+	IsFullSync               bool      `json:"is_full_sync"`
+	UpdatedAt                string    `json:"updated_at"`
+	Details                  DetailsDb `json:"details"`
+	IsSample                 bool      `json:"is_sample"`
+	Id                       int       `json:"id"`
+	IsOnDemand               bool      `json:"is_on_demand"`
+	Options                  string    `json:"options"`
+	Schedules                Schedules `json:"schedules"`
+	Engine                   string    `json:"engine"`
+	Refingerprint            string    `json:"refingerprint"`
+	CreatedAt                string    `json:"created_at"`
+	PointsOfInterest         string    `json:"points_of_interest"`
+}
+
+func dataSourceBase() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: dataSourceBasesRead,
+		ReadContext: dataSourceBaseRead,
 		Schema: map[string]*schema.Schema{
-			"databases": &schema.Schema{
-				Type:     schema.TypeList,
+			"id": &schema.Schema{
+				Type:     schema.TypeInt,
+				Required: true,
+			},
+			"name": &schema.Schema{
+				Type:     schema.TypeString,
 				Computed: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"description": &schema.Schema{
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"features": &schema.Schema{
-							Type:     schema.TypeList,
-							Computed: true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-						},
-						"cache_field_values_schedule": &schema.Schema{
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"timezone": &schema.Schema{
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"auto_run_queries": &schema.Schema{
-							Type:     schema.TypeBool,
-							Computed: true,
-						},
-						"metadata_sync_schedule": &schema.Schema{
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"name": &schema.Schema{
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"caveats": &schema.Schema{
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"is_full_sync": &schema.Schema{
-							Type:     schema.TypeBool,
-							Computed: true,
-						},
-						"updated_at": &schema.Schema{
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"native_permissions": &schema.Schema{
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"details": &schema.Schema{
-							Type:     schema.TypeMap,
-							Computed: true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-						},
-						"is_sample": &schema.Schema{
-							Type:     schema.TypeBool,
-							Computed: true,
-						},
-						"id": &schema.Schema{
-							Type:     schema.TypeInt,
-							Computed: true,
-						},
-						"is_on_demand": &schema.Schema{
-							Type:     schema.TypeBool,
-							Computed: true,
-						},
-						"options": &schema.Schema{
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"engine": &schema.Schema{
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"refingerprint": &schema.Schema{
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"created_at": &schema.Schema{
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"points_of_interest": &schema.Schema{
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-					},
-				},
 			},
 		},
 	}
 }
 
-func dataSourceBasesRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func dataSourceBaseRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := &http.Client{Timeout: 10 * time.Second}
 
 	c := m.(*Client)
@@ -122,7 +76,9 @@ func dataSourceBasesRead(ctx context.Context, d *schema.ResourceData, m interfac
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/database", "http://localhost:3000"), nil)
+	dbId := strconv.Itoa(d.Get("id").(int))
+
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/database/%s", "http://localhost:3000", dbId), nil)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -138,23 +94,36 @@ func dataSourceBasesRead(ctx context.Context, d *schema.ResourceData, m interfac
 	}
 	defer r.Body.Close()
 
-	databases := make([]map[string]interface{}, 0)
-	err = json.NewDecoder(r.Body).Decode(&databases)
+	database := &Database{}
+	err = json.NewDecoder(r.Body).Decode(&database)
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
-			Summary:  "Unable to decode",
-			Detail:   "Unable to decode JSON",
+			Summary:  "Unable to decode in dataSourceBaseRead()",
+			Detail:   "Unable to decode JSON in dataSourceBaseRead()",
 		})
 		return diags
 	}
 
-	if err := d.Set("databases", databases); err != nil {
-		return diag.FromErr(err)
+	if err := d.Set("id", database.Id); err != nil {
+		diags = append(diags, diag.Diagnostic{
+			Severity: diag.Error,
+			Summary:  "Unable to assign database.Id to database{} interface in dataSourceBaseRead()",
+			Detail:   "Unable to assign database.Id to database{} interface in dataSourceBaseRead()",
+		})
+		return diags
 	}
 
-	// always run
-	d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
+	if err := d.Set("name", database.Name); err != nil {
+		diags = append(diags, diag.Diagnostic{
+			Severity: diag.Error,
+			Summary:  "Unable to assign database.Name to database{} interface in dataSourceBaseRead()",
+			Detail:   "Unable to assign database.Name to database{} interface in dataSourceBaseRead()",
+		})
+		return diags
+	}
+
+	d.SetId(strconv.Itoa(database.Id))
 
 	return diags
 }

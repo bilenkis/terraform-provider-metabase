@@ -40,3 +40,6 @@ testacc:
 
 get_databases:
 	curl -X GET -H "Content-Type: application/json" -H "X-Metabase-Session: ${MB_TOKEN}" http://localhost:3000/api/database | jq
+
+get_database:
+	curl -X GET -H "Content-Type: application/json" -H "X-Metabase-Session: ${MB_TOKEN}" http://localhost:3000/api/database/1 | jq
