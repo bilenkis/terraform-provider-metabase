@@ -98,35 +98,6 @@ func resourceDatabase() *schema.Resource {
 	}
 }
 
-//"details": &schema.Schema{
-//Type:     schema.TypeList,
-//Required: true,
-//Elem: &schema.Resource{
-//Schema: map[string]*schema.Schema{
-//"host": &schema.Schema{
-//Type:     schema.TypeString,
-//Required: true,
-//},
-//"port": &schema.Schema{
-//Type:     schema.TypeString,
-//Required: true,
-//},
-//"db": &schema.Schema{
-//Type:     schema.TypeString,
-//Required: true,
-//},
-//"user": &schema.Schema{
-//Type:     schema.TypeString,
-//Required: true,
-//},
-//"password": &schema.Schema{
-//Type:     schema.TypeString,
-//Required: true,
-//},
-//},
-//},
-//},
-
 func resourceDatabaseCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := &http.Client{Timeout: 10 * time.Second}
 
@@ -134,23 +105,6 @@ func resourceDatabaseCreate(ctx context.Context, d *schema.ResourceData, m inter
 
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
-
-	//details := d.Get("details").(map[string]interface{})
-	//s, _ := strconv.Atoi(details["port"].(string))
-
-	//jsonStr := DatabaseAdd{
-	//Engine: d.Get("id").(string),
-	//Name:   d.Get("name").(string),
-	//Details: Details{
-	//Host:     details["host"].(string),
-	//Port:     s,
-	//Db:       details["db"].(string),
-	//User:     details["user"].(string),
-	//Password: details["password"].(string),
-	//},
-	//}
-
-	//s, _ := strconv.Atoi(d.Get("port").(string))
 
 	jsonStr := DatabaseCreate{
 		Engine: d.Get("engine").(string),
@@ -210,9 +164,7 @@ func resourceDatabaseCreate(ctx context.Context, d *schema.ResourceData, m inter
 		return diags
 	}
 
-	//database := &DatabaseAdd{}
-
-	var database DatabaseAdd
+	database := &DatabaseAdd{}
 
 	err = json.Unmarshal(body, &database)
 	if err != nil {
@@ -223,33 +175,6 @@ func resourceDatabaseCreate(ctx context.Context, d *schema.ResourceData, m inter
 		})
 		return diags
 	}
-
-	//if err := d.Set("id", database.Id); err != nil {
-	//diags = append(diags, diag.Diagnostic{
-	//Severity: diag.Error,
-	//Summary:  "Unable to set database.Id to d.id in dataSourceBaseRead()",
-	//Detail:   "Unable to set database.Id to d.id in dataSourceBaseRead()",
-	//})
-	//return diags
-	//}
-
-	//if err := d.Set("name", database.Name); err != nil {
-	//diags = append(diags, diag.Diagnostic{
-	//Severity: diag.Error,
-	//Summary:  "Unable to assign database.Name to d.name in dataSourceBaseRead()",
-	//Detail:   "Unable to assign database.Name to d.name in dataSourceBaseRead()",
-	//})
-	//return diags
-	//}
-
-	//if err := d.Set("description", database.Description); err != nil {
-	//diags = append(diags, diag.Diagnostic{
-	//Severity: diag.Error,
-	//Summary:  "Unable to assign database.Description to d.description in dataSourceBaseRead()",
-	//Detail:   "Unable to assign database.Description to d.description in dataSourceBaseRead()",
-	//})
-	//return diags
-	//}
 
 	d.SetId(strconv.Itoa(database.Id))
 
