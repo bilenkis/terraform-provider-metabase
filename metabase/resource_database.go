@@ -94,6 +94,11 @@ func resourceDatabase() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"last_updated": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -209,6 +214,25 @@ func resourceDatabaseRead(ctx context.Context, d *schema.ResourceData, m interfa
 	}
 	defer r.Body.Close()
 
+	body, err := ioutil.ReadAll(r.Body)
+	if r.StatusCode == http.StatusNotFound {
+		diags = append(diags, diag.Diagnostic{
+			Severity: diag.Error,
+			Summary:  fmt.Sprintf("Database not found in func resourceDatabaseRead(): %s", body),
+			Detail:   fmt.Sprintf("Database not found in func resourceDatabaseRead(): %s", body),
+		})
+		return diags
+	}
+
+	if r.StatusCode != 200 {
+		diags = append(diags, diag.Diagnostic{
+			Severity: diag.Error,
+			Summary:  fmt.Sprintf("Return code is not 200 in resourceDatabaseRead(): %s", body),
+			Detail:   fmt.Sprintf("Return code is not 200 in resourceDatabaseRead(): %s", body),
+		})
+		return diags
+	}
+
 	database := &DatabaseRead{}
 	err = json.NewDecoder(r.Body).Decode(&database)
 	if err != nil {
@@ -233,12 +257,139 @@ func resourceDatabaseRead(ctx context.Context, d *schema.ResourceData, m interfa
 }
 
 func resourceDatabaseUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	return resourceDatabaseUpdate(ctx, d, m)
+	client := &http.Client{Timeout: 10 * time.Second}
+
+	c := m.(*Client)
+
+	// Warning or errors can be collected in a slice type
+	var diags diag.Diagnostics
+
+	dbId := d.Id()
+
+	if d.HasChanges("engine", "name", "host", "port", "db", "user", "password") {
+		jsonStr := DatabaseCreate{
+			Engine: d.Get("engine").(string),
+			Name:   d.Get("name").(string),
+			Details: Details{
+				Host:     d.Get("host").(string),
+				Port:     d.Get("port").(int),
+				Db:       d.Get("db").(string),
+				User:     d.Get("user").(string),
+				Password: d.Get("password").(string),
+			},
+		}
+
+		jsonBody, err := json.Marshal(jsonStr)
+		if err != nil {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "Unable to Marshal JSON in resourceDatabaseUpdate()",
+				Detail:   "Unable to Marshal JSON in resourceDatabaseUpdate()",
+			})
+			return diags
+		}
+
+		req, err := http.NewRequest("PUT", fmt.Sprintf("%s/api/database/%s", "http://localhost:3000", dbId), bytes.NewBuffer(jsonBody))
+		if err != nil {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "Unable to make request in resourceDatabaseUpdate()",
+				Detail:   "Unable to make request in resourceDatabaseUpdate()",
+			})
+			return diags
+		}
+
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("X-Metabase-Session", c.Token)
+		// disable gzip
+		req.Header.Set("Accept-Encoding", "identity")
+
+		r, err := client.Do(req)
+		if err != nil {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "Unable to POST JSON in resourceDatabaseUpdate()",
+				Detail:   "Unable to POST JSON in resourceDatabaseUpdate()",
+			})
+			return diags
+		}
+		defer r.Body.Close()
+
+		body, err := ioutil.ReadAll(r.Body)
+		if r.StatusCode != 200 {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  fmt.Sprintf("Return code is not 200 in resourceDatabaseUpdate(): %s", body),
+				Detail:   fmt.Sprintf("Return code is not 200 in resourceDatabaseUpdate(): %s", body),
+			})
+			return diags
+		}
+
+		database := &DatabaseAdd{}
+
+		err = json.Unmarshal(body, &database)
+		if err != nil {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "Unable to decode JSON in resourceDatabaseUpdate()",
+				Detail:   "Unable to decode JSON in resourceDatabaseUpdate()",
+			})
+			return diags
+		}
+
+		d.Set("last_updated", database.UpdatedAt)
+	}
+
+	return resourceDatabaseRead(ctx, d, m)
 }
 
 func resourceDatabaseDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	client := &http.Client{Timeout: 10 * time.Second}
+
+	c := m.(*Client)
+
+	dbId := d.Id()
+
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
+
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/api/database/%s", "http://localhost:3000", dbId), nil)
+	if err != nil {
+		diags = append(diags, diag.Diagnostic{
+			Severity: diag.Error,
+			Summary:  "Unable to make request in resourceDatabaseCreate()",
+			Detail:   "Unable to make request in resourceDatabaseCreate()",
+		})
+		return diags
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-Metabase-Session", c.Token)
+	// disable gzip
+	req.Header.Set("Accept-Encoding", "identity")
+
+	r, err := client.Do(req)
+	if err != nil {
+		diags = append(diags, diag.Diagnostic{
+			Severity: diag.Error,
+			Summary:  "Unable to DELETE in resourceDatabaseCreate()",
+			Detail:   "Unable to DELETE in resourceDatabaseCreate()",
+		})
+		return diags
+	}
+	defer r.Body.Close()
+
+	body, err := ioutil.ReadAll(r.Body)
+	if r.StatusCode != http.StatusNoContent {
+		diags = append(diags, diag.Diagnostic{
+			Severity: diag.Error,
+			Summary:  fmt.Sprintf("Return code is not 204 in resourceDatabaseCreate(): %s", body),
+			Detail:   fmt.Sprintf("Return code is not 204 in resourceDatabaseCreate(): %s", body),
+		})
+		return diags
+	}
+
+	d.SetId("")
 
 	return diags
 }
