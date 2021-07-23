@@ -211,7 +211,7 @@ func resourceDatabaseRead(ctx context.Context, d *schema.ResourceData, m interfa
 	}
 	defer r.Body.Close()
 
-	body, err := ioutil.ReadAll(r.Body)
+	body, _ := ioutil.ReadAll(r.Body)
 	if r.StatusCode == http.StatusNotFound {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
@@ -231,7 +231,7 @@ func resourceDatabaseRead(ctx context.Context, d *schema.ResourceData, m interfa
 	}
 
 	database := &DatabaseRead{}
-	err = json.NewDecoder(r.Body).Decode(&database)
+	err = json.Unmarshal(body, &database)
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
