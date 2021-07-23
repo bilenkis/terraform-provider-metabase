@@ -9,9 +9,6 @@ import (
 	"time"
 )
 
-// HostURL - Default Hashicups URL
-const HostURL string = "http://localhost:3000"
-
 // Client -
 type Client struct {
 	HostURL    string
@@ -31,18 +28,16 @@ type AuthResponse struct {
 }
 
 // NewClient -
-func NewClient(host, username, password *string) (*Client, error) {
+func NewClient(url, username, password *string) (*Client, error) {
 	c := Client{
 		HTTPClient: &http.Client{Timeout: 10 * time.Second},
-		// Default Hashicups URL
-		HostURL: HostURL,
 	}
 
-	if host != nil {
-		c.HostURL = *host
+	if url != nil {
+		c.HostURL = *url
 	}
 
-	if (username != nil) && (password != nil) {
+	if (username != nil) && (password != nil) && (url != nil) {
 		// form request body
 		rb, err := json.Marshal(AuthStruct{
 			Username: *username,
@@ -75,7 +70,6 @@ func NewClient(host, username, password *string) (*Client, error) {
 
 func (c *Client) doRequest(req *http.Request) ([]byte, error) {
 	req.Header.Set("Content-Type", "application/json")
-	//req.Header.Set("X-Metabase-Session", c.Token)
 
 	res, err := c.HTTPClient.Do(req)
 	if err != nil {

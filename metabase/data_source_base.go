@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -73,16 +72,15 @@ func dataSourceBase() *schema.Resource {
 }
 
 func dataSourceBaseRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := &http.Client{Timeout: 10 * time.Second}
-
 	c := m.(*Client)
+	client := c.HTTPClient
 
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
 	dbId := strconv.Itoa(d.Get("id").(int))
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/database/%s", "http://localhost:3000", dbId), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/database/%s", c.HostURL, dbId), nil)
 	if err != nil {
 		return diag.FromErr(err)
 	}

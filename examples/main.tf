@@ -15,12 +15,18 @@ variable "metabase_password" {
   type = string
 }
 
+variable "metabase_url" {
+  type    = string
+  default = "http://localhost:3000"
+}
+
 variable "base_name" {
   type    = string
   default = "Sample Dataset"
 }
 
 provider "metabase" {
+  url      = var.metabase_url
   username = var.metabase_username
   password = var.metabase_password
 }

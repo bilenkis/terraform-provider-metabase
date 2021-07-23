@@ -115,14 +115,14 @@ func dataSourceBases() *schema.Resource {
 }
 
 func dataSourceBasesRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := &http.Client{Timeout: 10 * time.Second}
-
 	c := m.(*Client)
+
+	client := c.HTTPClient
 
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/database", "http://localhost:3000"), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/database", c.HostURL), nil)
 	if err != nil {
 		return diag.FromErr(err)
 	}

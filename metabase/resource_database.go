@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -104,9 +103,8 @@ func resourceDatabase() *schema.Resource {
 }
 
 func resourceDatabaseCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := &http.Client{Timeout: 10 * time.Second}
-
 	c := m.(*Client)
+	client := c.HTTPClient
 
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
@@ -133,7 +131,7 @@ func resourceDatabaseCreate(ctx context.Context, d *schema.ResourceData, m inter
 		return diags
 	}
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/api/database", "http://localhost:3000"), bytes.NewBuffer(jsonBody))
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/api/database", c.HostURL), bytes.NewBuffer(jsonBody))
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
@@ -189,16 +187,15 @@ func resourceDatabaseCreate(ctx context.Context, d *schema.ResourceData, m inter
 }
 
 func resourceDatabaseRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := &http.Client{Timeout: 10 * time.Second}
-
 	c := m.(*Client)
+	client := c.HTTPClient
 
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
 	dbId := d.Id()
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/database/%s", "http://localhost:3000", dbId), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/database/%s", c.HostURL, dbId), nil)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -257,9 +254,8 @@ func resourceDatabaseRead(ctx context.Context, d *schema.ResourceData, m interfa
 }
 
 func resourceDatabaseUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := &http.Client{Timeout: 10 * time.Second}
-
 	c := m.(*Client)
+	client := c.HTTPClient
 
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
@@ -289,7 +285,7 @@ func resourceDatabaseUpdate(ctx context.Context, d *schema.ResourceData, m inter
 			return diags
 		}
 
-		req, err := http.NewRequest("PUT", fmt.Sprintf("%s/api/database/%s", "http://localhost:3000", dbId), bytes.NewBuffer(jsonBody))
+		req, err := http.NewRequest("PUT", fmt.Sprintf("%s/api/database/%s", c.HostURL, dbId), bytes.NewBuffer(jsonBody))
 		if err != nil {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Error,
@@ -344,16 +340,15 @@ func resourceDatabaseUpdate(ctx context.Context, d *schema.ResourceData, m inter
 }
 
 func resourceDatabaseDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := &http.Client{Timeout: 10 * time.Second}
-
 	c := m.(*Client)
+	client := c.HTTPClient
 
 	dbId := d.Id()
 
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/api/database/%s", "http://localhost:3000", dbId), nil)
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/api/database/%s", c.HostURL, dbId), nil)
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,

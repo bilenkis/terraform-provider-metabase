@@ -1,4 +1,4 @@
-# Terraform Provider Hashicups
+# Terraform Provider Metabase
 
 Run the following command to build the provider
 

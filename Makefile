@@ -5,8 +5,9 @@ NAME=metabase
 BINARY=terraform-provider-${NAME}
 VERSION=0.2
 OS_ARCH=darwin_amd64
+METABASE_URL=http://localhost:3000
 
-MB_TOKEN=$(shell curl -X POST -H "Content-Type: application/json" -d '{"username": "${TF_VAR_metabase_username}", "password": "${TF_VAR_metabase_password}"}' http://localhost:3000/api/session | jq .id)
+MB_TOKEN=$(shell curl -X POST -H "Content-Type: application/json" -d '{"username": "${TF_VAR_metabase_username}", "password": "${TF_VAR_metabase_password}"}' ${METABASE_URL}/api/session | jq .id)
 
 default: install
 
@@ -39,7 +40,7 @@ testacc:
 	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m
 
 get_databases:
-	curl -X GET -H "Content-Type: application/json" -H "X-Metabase-Session: ${MB_TOKEN}" http://localhost:3000/api/database | jq
+	curl -X GET -H "Content-Type: application/json" -H "X-Metabase-Session: ${MB_TOKEN}" ${METABASE_URL}/api/database | jq
 
 get_database:
-	curl -X GET -H "Content-Type: application/json" -H "X-Metabase-Session: ${MB_TOKEN}" http://localhost:3000/api/database/1 | jq
+	curl -X GET -H "Content-Type: application/json" -H "X-Metabase-Session: ${MB_TOKEN}" ${METABASE_URL}/api/database/1 | jq
