@@ -39,26 +39,36 @@ provider "metabase" {
 #value = module.base.id[var.base_name]
 #}
 
-data "metabase_base" "one" {
-  id = 1
-}
+#data "metabase_base" "one" {
+#id = 1
+#}
 
-output "base_name" {
-  value = data.metabase_base.one
-}
+#output "base_name" {
+#value = data.metabase_base.one
+#}
 
 #data "metabase_bases" "all" {}
 
 ## Returns all coffees
 #output "all_bases" {
-  #value = data.metabase_bases.all.databases
+#value = data.metabase_bases.all.databases
 #}
 
 ## Only returns packer spiced latte
 #output "id" {
-  #value = {
-    #for base in data.metabase_bases.all.databases :
-    #base.name => base.id
-    #if base.name == var.base_name
-  #}
+#value = {
+#for base in data.metabase_bases.all.databases :
+#base.name => base.id
+#if base.name == var.base_name
 #}
+#}
+
+resource "metabase_database" "my" {
+  name     = "test"
+  engine   = "postgres"
+  host     = "pg"
+  port     = 5432
+  db       = "postgres"
+  user     = "postgres"
+  password = "2I1dnzeYCIefM8Ru6Rxj"
+}

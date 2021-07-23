@@ -29,7 +29,7 @@ type Schedules struct {
 	MetadataSync     CacheFieldValues `json:"metadata_sync"`
 }
 
-type Database struct {
+type DatabaseRead struct {
 	Description              string    `json:"description"`
 	Features                 []string  `json:"features"`
 	CacheFieldValuesSchedule string    `json:"cache_field_values_schedule"`
@@ -56,6 +56,10 @@ func dataSourceBase() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: dataSourceBaseRead,
 		Schema: map[string]*schema.Schema{
+			"description": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"id": &schema.Schema{
 				Type:     schema.TypeInt,
 				Required: true,
@@ -85,8 +89,6 @@ func dataSourceBaseRead(ctx context.Context, d *schema.ResourceData, m interface
 
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-Metabase-Session", c.Token)
-	// disable gzip
-	req.Header.Set("Accept-Encoding", "identity")
 
 	r, err := client.Do(req)
 	if err != nil {
@@ -94,12 +96,12 @@ func dataSourceBaseRead(ctx context.Context, d *schema.ResourceData, m interface
 	}
 	defer r.Body.Close()
 
-	database := &Database{}
+	database := &DatabaseRead{}
 	err = json.NewDecoder(r.Body).Decode(&database)
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
-			Summary:  "Unable to decode in dataSourceBaseRead()",
+			Summary:  "Unable to decode JSON in dataSourceBaseRead()",
 			Detail:   "Unable to decode JSON in dataSourceBaseRead()",
 		})
 		return diags
@@ -108,8 +110,8 @@ func dataSourceBaseRead(ctx context.Context, d *schema.ResourceData, m interface
 	if err := d.Set("id", database.Id); err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
-			Summary:  "Unable to assign database.Id to database{} interface in dataSourceBaseRead()",
-			Detail:   "Unable to assign database.Id to database{} interface in dataSourceBaseRead()",
+			Summary:  "Unable to set database.Id to d.id in dataSourceBaseRead()",
+			Detail:   "Unable to set database.Id to d.id in dataSourceBaseRead()",
 		})
 		return diags
 	}
@@ -117,8 +119,17 @@ func dataSourceBaseRead(ctx context.Context, d *schema.ResourceData, m interface
 	if err := d.Set("name", database.Name); err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
-			Summary:  "Unable to assign database.Name to database{} interface in dataSourceBaseRead()",
-			Detail:   "Unable to assign database.Name to database{} interface in dataSourceBaseRead()",
+			Summary:  "Unable to assign database.Name to d.name in dataSourceBaseRead()",
+			Detail:   "Unable to assign database.Name to d.name in dataSourceBaseRead()",
+		})
+		return diags
+	}
+
+	if err := d.Set("description", database.Description); err != nil {
+		diags = append(diags, diag.Diagnostic{
+			Severity: diag.Error,
+			Summary:  "Unable to assign database.Description to d.description in dataSourceBaseRead()",
+			Detail:   "Unable to assign database.Description to d.description in dataSourceBaseRead()",
 		})
 		return diags
 	}

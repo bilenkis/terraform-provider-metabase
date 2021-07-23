@@ -23,7 +23,9 @@ func Provider() *schema.Provider {
 				DefaultFunc: schema.EnvDefaultFunc("METABASE_PASSWORD", nil),
 			},
 		},
-		ResourcesMap: map[string]*schema.Resource{},
+		ResourcesMap: map[string]*schema.Resource{
+			"metabase_database": resourceDatabase(),
+		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"metabase_bases": dataSourceBases(),
 			"metabase_base":  dataSourceBase(),
