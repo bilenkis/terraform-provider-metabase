@@ -68,12 +68,29 @@ func dataSourceBases() *schema.Resource {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
-						"details": &schema.Schema{
-							Type:     schema.TypeMap,
+						"details_host": &schema.Schema{
+							Type:     schema.TypeString,
 							Computed: true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
+						},
+						"details_port": &schema.Schema{
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+						"details_db": &schema.Schema{
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"details_user": &schema.Schema{
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"details_password": &schema.Schema{
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"details_ssl": &schema.Schema{
+							Type:     schema.TypeBool,
+							Computed: true,
 						},
 						"is_sample": &schema.Schema{
 							Type:     schema.TypeBool,
@@ -138,18 +155,23 @@ func dataSourceBasesRead(ctx context.Context, d *schema.ResourceData, m interfac
 	}
 	defer r.Body.Close()
 
-	databases := make([]map[string]interface{}, 0)
+	var databases []Database
+
+	//body, err := ioutil.ReadAll(r.Body)
+	//err = json.Unmarshal(body, &databases)
 	err = json.NewDecoder(r.Body).Decode(&databases)
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
 			Summary:  "Unable to decode",
-			Detail:   "Unable to decode JSON",
+			Detail:   fmt.Sprintf("Unable to decode JSON: %s", err.Error()),
 		})
 		return diags
 	}
 
-	if err := d.Set("databases", databases); err != nil {
+	flattenned_databases := flattenDatabases(databases)
+
+	if err := d.Set("databases", flattenned_databases); err != nil {
 		return diag.FromErr(err)
 	}
 
@@ -157,4 +179,46 @@ func dataSourceBasesRead(ctx context.Context, d *schema.ResourceData, m interfac
 	d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
 
 	return diags
+}
+
+func flattenDatabases(databases []Database) []interface{} {
+	if databases != nil {
+		ois := make([]interface{}, len(databases), len(databases))
+
+		for i, database := range databases {
+			oi := make(map[string]interface{})
+
+			oi["description"] = database.Description
+			oi["features"] = database.Features
+			oi["cache_field_values_schedule"] = database.CacheFieldValuesSchedule
+			oi["timezone"] = database.Timezone
+			oi["auto_run_queries"] = database.AutoRunQueries
+			oi["metadata_sync_schedule"] = database.MetadataSyncSchedule
+			oi["name"] = database.Name
+			oi["caveats"] = database.Caveats
+			oi["is_full_sync"] = database.IsFullSync
+			oi["updated_at"] = database.UpdatedAt
+			oi["native_permissions"] = database.NativePermissions
+			oi["details_host"] = database.Details.Host
+			oi["details_port"] = database.Details.Port
+			oi["details_db"] = database.Details.Db
+			oi["details_user"] = database.Details.User
+			oi["details_password"] = database.Details.Password
+			oi["details_ssl"] = database.Details.Ssl
+			oi["is_sample"] = database.IsSample
+			oi["id"] = database.Id
+			oi["is_on_demand"] = database.IsOnDemand
+			oi["options"] = database.Options
+			oi["engine"] = database.Engine
+			oi["refingerprint"] = database.Refingerprint
+			oi["created_at"] = database.CreatedAt
+			oi["points_of_interest"] = database.PointsOfInterest
+
+			ois[i] = oi
+		}
+
+		return ois
+	}
+
+	return make([]interface{}, 0)
 }

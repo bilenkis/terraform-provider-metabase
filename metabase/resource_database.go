@@ -13,47 +13,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-type Details struct {
-	Host     string `json:"host"`
-	Port     int    `json:"port"`
-	Db       string `json:"db"`
-	User     string `json:"user"`
-	Password string `json:"password"`
-}
-
-type DetailsAdd struct {
-	*Details
-	Ssl bool `json:"ssl"`
-}
-
-type DatabaseCreate struct {
-	Engine  string  `json:"engine"`
-	Name    string  `json:"name"`
-	Details Details `json:"details"`
-}
-
-type DatabaseAdd struct {
-	Description              string     `json:"description"`
-	Features                 []string   `json:"features"`
-	CacheFieldValuesSchedule string     `json:"cache_field_values_schedule"`
-	Timezone                 string     `json:"timezone"`
-	AutoRunQueries           bool       `json:"auto_run_queries"`
-	MetadataSyncSchedule     string     `json:"metadata_sync_schedule"`
-	Name                     string     `json:"name"`
-	Caveats                  string     `json:"caveats"`
-	IsFullSync               bool       `json:"is_full_sync"`
-	UpdatedAt                string     `json:"updated_at"`
-	Details                  DetailsAdd `json:"details"`
-	IsSample                 bool       `json:"is_sample"`
-	Id                       int        `json:"id"`
-	IsOnDemand               bool       `json:"is_on_demand"`
-	Options                  string     `json:"options"`
-	Engine                   string     `json:"engine"`
-	Refingerprint            string     `json:"refingerprint"`
-	CreatedAt                string     `json:"created_at"`
-	PointsOfInterest         string     `json:"points_of_interest"`
-}
-
 func resourceDatabase() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceDatabaseCreate,
@@ -170,7 +129,7 @@ func resourceDatabaseCreate(ctx context.Context, d *schema.ResourceData, m inter
 		return diags
 	}
 
-	database := &DatabaseAdd{}
+	database := &Database{}
 
 	err = json.Unmarshal(body, &database)
 	if err != nil {
@@ -324,7 +283,7 @@ func resourceDatabaseUpdate(ctx context.Context, d *schema.ResourceData, m inter
 			return diags
 		}
 
-		database := &DatabaseAdd{}
+		database := &Database{}
 
 		err = json.Unmarshal(body, &database)
 		if err != nil {

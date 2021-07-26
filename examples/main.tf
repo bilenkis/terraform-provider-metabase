@@ -31,44 +31,32 @@ provider "metabase" {
   password = var.metabase_password
 }
 
-#module "base" {
-#source = "./base"
+data "metabase_bases" "all" {}
 
-#base_name = var.base_name
-#}
+# Returns all databases
+output "all_bases" {
+  value = data.metabase_bases.all.databases
+}
 
-#output "all_bases" {
-#value = module.base.all_bases
-#}
+# Only returns "Sample Dataset" database
+output "id" {
+  value = {
+    for base in data.metabase_bases.all.databases :
+    base.name => base.id
+    if base.name == var.base_name
+  }
+}
 
-#output "base_name_to_id" {
-#value = module.base.id[var.base_name]
-#}
+# Returns parameters for the database with id=1
+data "metabase_base" "one" {
+  id = 1
+}
 
-#data "metabase_base" "one" {
-#id = 1
-#}
+output "base_name" {
+  value = data.metabase_base.one
+}
 
-#output "base_name" {
-#value = data.metabase_base.one
-#}
-
-#data "metabase_bases" "all" {}
-
-## Returns all coffees
-#output "all_bases" {
-#value = data.metabase_bases.all.databases
-#}
-
-## Only returns packer spiced latte
-#output "id" {
-#value = {
-#for base in data.metabase_bases.all.databases :
-#base.name => base.id
-#if base.name == var.base_name
-#}
-#}
-
+# Creates a new database
 resource "metabase_database" "my" {
   name     = "test"
   engine   = "postgres"
@@ -77,4 +65,8 @@ resource "metabase_database" "my" {
   db       = "postgres"
   user     = "postgres"
   password = "2I1dnzeYCIefM8Ru6Rxj"
+}
+
+output "my_id" {
+  value = metabase_database.my.id
 }
