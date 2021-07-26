@@ -14,7 +14,8 @@ First, build and install the provider.
 make install
 ```
 
-Get your username and password from Metabase and export them as `TF_VARs`:
+Configure Metabase URL either using provider configuration directly or using ENV variables.
+Get your username and password from Metabase and export them as `TF_VARs`.
 
 ```shell
 export TF_VAR_metabase_username=user@example.com TF_VAR_metabase_password=xxxxxxxxxxxxx
@@ -23,5 +24,5 @@ export TF_VAR_metabase_username=user@example.com TF_VAR_metabase_password=xxxxxx
 Then, run the following command to initialize the workspace and apply the sample configuration.
 
 ```shell
-terraform init && terraform apply
+cd examples && terraform init && terraform apply
 ```
