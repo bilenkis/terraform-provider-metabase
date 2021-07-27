@@ -3,12 +3,12 @@
 page_title: "metabase_database Resource - terraform-provider-metabase"
 subcategory: ""
 description: |-
-  
+  metabase_database resource can be used for managing databases (CRUD).
 ---
 
 # metabase_database (Resource)
 
-
+`metabase_database` resource can be used for managing databases (CRUD).
 
 
 
@@ -17,21 +17,21 @@ description: |-
 
 ### Required
 
-- **db** (String)
-- **engine** (String)
-- **host** (String)
-- **name** (String)
-- **password** (String)
-- **port** (Number)
-- **user** (String)
+- **db** (String) Database name inside an engine
+- **host** (String) Database host: IP or hostname
+- **name** (String) Name of the source in Metabase
+- **password** (String) Password to connect to a database
+- **user** (String) User name to connect to a database
 
 ### Optional
 
+- **engine** (String) Engine of a database. See [Officially supported databases](https://github.com/metabase/metabase/blob/master/docs/administration-guide/01-managing-databases.md)
 - **id** (String) The ID of this resource.
-- **last_updated** (String)
+- **last_updated** (String) Timestamp when a database has been updated last time
+- **port** (Number) Database port
 
 ### Read-Only
 
-- **description** (String)
+- **description** (String) Description of a source in Metabase
 
 

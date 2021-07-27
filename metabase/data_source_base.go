@@ -13,19 +13,23 @@ import (
 
 func dataSourceBase() *schema.Resource {
 	return &schema.Resource{
+		Description: "`metabase_base` data source can be used to retrieve parameters of a certain database.\n\n",
 		ReadContext: dataSourceBaseRead,
 		Schema: map[string]*schema.Schema{
 			"description": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Description: "Description of a source in Metabase",
+				Type:        schema.TypeString,
+				Computed:    true,
 			},
 			"id": &schema.Schema{
-				Type:     schema.TypeInt,
-				Required: true,
+				Description: "Source ID",
+				Type:        schema.TypeInt,
+				Required:    true,
 			},
 			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Description: "Source name",
+				Type:        schema.TypeString,
+				Computed:    true,
 			},
 		},
 	}

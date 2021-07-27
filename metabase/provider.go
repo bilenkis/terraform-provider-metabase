@@ -12,16 +12,19 @@ func Provider() *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"url": &schema.Schema{
+				Description: "URL of a Metabase instance",
 				Type:        schema.TypeString,
 				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("METABASE_URL", nil),
 			},
 			"username": &schema.Schema{
+				Description: "User name account to connect to Metabase",
 				Type:        schema.TypeString,
 				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("METABASE_USERNAME", nil),
 			},
 			"password": &schema.Schema{
+				Description: "Password of the user to connect to Metabase",
 				Type:        schema.TypeString,
 				Required:    true,
 				Sensitive:   true,

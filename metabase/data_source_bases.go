@@ -14,6 +14,8 @@ import (
 
 func dataSourceBases() *schema.Resource {
 	return &schema.Resource{
+		Description: "`metabase_bases` data source can be used to retrieve all defined databases as a list.\n\n" +
+			"Example response can be found in [schema_data_databases.txt](../schema_data_databases.txt)",
 		ReadContext: dataSourceBasesRead,
 		Schema: map[string]*schema.Schema{
 			"databases": &schema.Schema{
@@ -41,8 +43,9 @@ func dataSourceBases() *schema.Resource {
 							Computed: true,
 						},
 						"auto_run_queries": &schema.Schema{
-							Type:     schema.TypeBool,
-							Computed: true,
+							Description: "Example: \"\"",
+							Type:        schema.TypeBool,
+							Computed:    true,
 						},
 						"metadata_sync_schedule": &schema.Schema{
 							Type:     schema.TypeString,

@@ -15,47 +15,59 @@ import (
 
 func resourceDatabase() *schema.Resource {
 	return &schema.Resource{
+		Description:   "`metabase_database` resource can be used for managing databases (CRUD).\n\n",
 		CreateContext: resourceDatabaseCreate,
 		ReadContext:   resourceDatabaseRead,
 		UpdateContext: resourceDatabaseUpdate,
 		DeleteContext: resourceDatabaseDelete,
 		Schema: map[string]*schema.Schema{
 			"description": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Description: "Description of a source in Metabase",
+				Type:        schema.TypeString,
+				Computed:    true,
 			},
 			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Description: "Name of the source in Metabase",
+				Type:        schema.TypeString,
+				Required:    true,
 			},
 			"engine": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Description: "Engine of a database. See [Officially supported databases](https://github.com/metabase/metabase/blob/master/docs/administration-guide/01-managing-databases.md)",
+				Type:        schema.TypeString,
+				Optional:    true,
+				Default:     "postgres",
 			},
 			"host": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Description: "Database host: IP or hostname",
+				Type:        schema.TypeString,
+				Required:    true,
 			},
 			"port": &schema.Schema{
-				Type:     schema.TypeInt,
-				Required: true,
+				Description: "Database port",
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Default:     5432,
 			},
 			"db": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Description: "Database name inside an engine",
+				Type:        schema.TypeString,
+				Required:    true,
 			},
 			"user": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Description: "User name to connect to a database",
+				Type:        schema.TypeString,
+				Required:    true,
 			},
 			"password": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Description: "Password to connect to a database",
+				Type:        schema.TypeString,
+				Required:    true,
 			},
 			"last_updated": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Description: "Timestamp when a database has been updated last time",
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
 			},
 		},
 		Importer: &schema.ResourceImporter{

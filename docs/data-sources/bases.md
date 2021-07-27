@@ -3,12 +3,15 @@
 page_title: "metabase_bases Data Source - terraform-provider-metabase"
 subcategory: ""
 description: |-
-  
+  metabase_bases data source can be used to retrieve all defined databases as a list.
+  Example response can be found in schemadatadatabases.txt ../schema_data_databases.txt
 ---
 
 # metabase_bases (Data Source)
 
+`metabase_bases` data source can be used to retrieve all defined databases as a list.
 
+Example response can be found in [schema_data_databases.txt](../schema_data_databases.txt)
 
 
 
