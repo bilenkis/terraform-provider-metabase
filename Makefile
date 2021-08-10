@@ -1,9 +1,9 @@
 TEST?=$$(go list ./... | grep -v 'vendor')
-HOSTNAME=bilenkis.io
+HOSTNAME=registry.terraform.io
 NAMESPACE=bilenkis
 NAME=metabase
 BINARY=terraform-provider-${NAME}
-VERSION=0.2
+VERSION=0.2.3
 OS_ARCH=darwin_amd64
 METABASE_URL=http://localhost:3000
 
