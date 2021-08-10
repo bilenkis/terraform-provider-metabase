@@ -17,7 +17,7 @@ You need to get your API credentials from Metabase to be able to interact with t
 terraform {
   required_providers {
     metabase = {
-      version = "0.2"
+      version = "0.2.3"
       source  = "bilenkis/metabase"
     }
   }
