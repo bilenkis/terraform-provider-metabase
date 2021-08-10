@@ -18,7 +18,7 @@ terraform {
   required_providers {
     metabase = {
       version = "0.2"
-      source  = "bilenkis.io/bilenkis/metabase"
+      source  = "bilenkis/metabase"
     }
   }
 }
