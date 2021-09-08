@@ -1,4 +1,4 @@
-package metabase
+package provider
 
 import (
 	"context"

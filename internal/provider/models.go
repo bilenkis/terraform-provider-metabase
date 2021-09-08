@@ -1,4 +1,4 @@
-package metabase
+package provider
 
 type Details struct {
 	Host     string `json:"host,omitempty"`

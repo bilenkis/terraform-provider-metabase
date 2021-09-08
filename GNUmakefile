@@ -9,7 +9,10 @@ METABASE_URL=http://localhost:3000
 
 MB_TOKEN=$(shell curl -X POST -H "Content-Type: application/json" -d '{"username": "${TF_VAR_metabase_username}", "password": "${TF_VAR_metabase_password}"}' ${METABASE_URL}/api/session | jq .id)
 
-default: install
+default: testacc
+
+# Run acceptance tests
+.PHONY: testacc
 
 build:
 	go build -o ${BINARY}

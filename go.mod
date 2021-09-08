@@ -1,8 +1,8 @@
-module terraform-provider-metabase
+module github.com/bilenkis/terraform-provider-metabase
 
-go 1.13
+go 1.15
 
 require (
-	github.com/hashicorp/terraform-plugin-docs v0.4.0 // indirect
-	github.com/hashicorp/terraform-plugin-sdk/v2 v2.0.0-rc.2
+	github.com/hashicorp/terraform-plugin-docs v0.4.0
+	github.com/hashicorp/terraform-plugin-sdk/v2 v2.7.1
 )
