@@ -23,107 +23,107 @@ func dataSourceBases() *schema.Resource {
 				Computed: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"description": &schema.Schema{
+						"description": {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
-						"features": &schema.Schema{
+						"features": {
 							Type:     schema.TypeList,
 							Computed: true,
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
 						},
-						"cache_field_values_schedule": &schema.Schema{
+						"cache_field_values_schedule": {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
-						"timezone": &schema.Schema{
+						"timezone": {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
-						"auto_run_queries": &schema.Schema{
+						"auto_run_queries": {
 							Description: "Example: \"\"",
 							Type:        schema.TypeBool,
 							Computed:    true,
 						},
-						"metadata_sync_schedule": &schema.Schema{
+						"metadata_sync_schedule": {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
-						"name": &schema.Schema{
+						"name": {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
-						"caveats": &schema.Schema{
+						"caveats": {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
-						"is_full_sync": &schema.Schema{
+						"is_full_sync": {
 							Type:     schema.TypeBool,
 							Computed: true,
 						},
-						"updated_at": &schema.Schema{
+						"updated_at": {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
-						"native_permissions": &schema.Schema{
+						"native_permissions": {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
-						"details_host": &schema.Schema{
+						"details_host": {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
-						"details_port": &schema.Schema{
+						"details_port": {
 							Type:     schema.TypeInt,
 							Computed: true,
 						},
-						"details_db": &schema.Schema{
+						"details_db": {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
-						"details_user": &schema.Schema{
+						"details_user": {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
-						"details_password": &schema.Schema{
+						"details_password": {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
-						"details_ssl": &schema.Schema{
+						"details_ssl": {
 							Type:     schema.TypeBool,
 							Computed: true,
 						},
-						"is_sample": &schema.Schema{
+						"is_sample": {
 							Type:     schema.TypeBool,
 							Computed: true,
 						},
-						"id": &schema.Schema{
+						"id": {
 							Type:     schema.TypeInt,
 							Computed: true,
 						},
-						"is_on_demand": &schema.Schema{
+						"is_on_demand": {
 							Type:     schema.TypeBool,
 							Computed: true,
 						},
-						"options": &schema.Schema{
+						"options": {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
-						"engine": &schema.Schema{
+						"engine": {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
-						"refingerprint": &schema.Schema{
+						"refingerprint": {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
-						"created_at": &schema.Schema{
+						"created_at": {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
-						"points_of_interest": &schema.Schema{
+						"points_of_interest": {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
