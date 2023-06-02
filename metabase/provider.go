@@ -11,23 +11,23 @@ import (
 func Provider() *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
-			"url": &schema.Schema{
+			"url": {
 				Description: "URL of a Metabase instance",
 				Type:        schema.TypeString,
 				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("METABASE_URL", nil),
 			},
-			"username": &schema.Schema{
+			"username": {
 				Description: "User name account to connect to Metabase",
 				Type:        schema.TypeString,
 				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("METABASE_USERNAME", nil),
 			},
-			"password": &schema.Schema{
+			"password": {
 				Description: "Password of the user to connect to Metabase",
 				Type:        schema.TypeString,
 				Required:    true,
-				Sensitive:   true,
+				Sensitive: true,
 				DefaultFunc: schema.EnvDefaultFunc("METABASE_PASSWORD", nil),
 			},
 		},
