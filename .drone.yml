@@ -2,6 +2,10 @@ kind: pipeline
 type: docker
 name: default
 
+trigger:
+  event:
+    - push
+
 steps:
   - name: greeting
     image: alpine
