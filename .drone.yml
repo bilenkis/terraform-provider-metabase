@@ -12,4 +12,3 @@ steps:
     commands:
       - echo hello
       - echo world
-
