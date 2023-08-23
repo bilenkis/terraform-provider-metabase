@@ -22,3 +22,27 @@ steps:
     image: alpine
     commands:
       - sleep 3600
+---
+kind: pipeline
+type: docker
+name: sleep 2
+
+platform:
+  os: linux
+  arch: arm64
+
+trigger:
+  event:
+    - push
+
+steps:
+  - name: greeting
+    image: alpine
+    commands:
+      - sleep 3600
+  - name: waiting
+    depends_on:
+      - greeting
+    image: alpine
+    commands:
+      - sleep 3600
