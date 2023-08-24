@@ -15,13 +15,13 @@ steps:
   - name: greeting
     image: alpine
     commands:
-      - sleep 3600
+      - sleep 1200
   - name: waiting
     depends_on:
       - greeting
     image: alpine
     commands:
-      - sleep 3600
+      - sleep 1200
 ---
 kind: pipeline
 type: docker
@@ -39,10 +39,10 @@ steps:
   - name: greeting
     image: alpine
     commands:
-      - sleep 3600
+      - sleep 1200
   - name: waiting
     depends_on:
       - greeting
     image: alpine
     commands:
-      - sleep 3600
+      - sleep 1200
