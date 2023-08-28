@@ -49,7 +49,7 @@ steps:
 ---
 kind: pipeline
 type: docker
-name: sleep 2
+name: sleep 3
 
 platform:
   os: linux
